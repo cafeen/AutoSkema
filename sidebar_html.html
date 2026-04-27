@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    :root {
+      --green:       #2e7d32;
+      --green-dark:  #1b5e20;
+      --green-light: #e8f5e9;
+      --red:         #c62828;
+      --red-light:   #ffebee;
+      --amber:       #e65100;
+      --amber-light: #fff8e1;
+      --blue:        #1565c0;
+      --blue-light:  #e3f2fd;
+      --grey:        #546e7a;
+      --grey-light:  #eceff1;
+      --border:      #e0e0e0;
+      --text:        #212121;
+      --muted:       #757575;
+      --bg:          #f0f2f5;
+      --radius:      7px;
+      --shadow:      0 1px 3px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 13px;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 12px;
+    }
+
+    /* ── Header ─────────────────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, var(--green-dark) 0%, var(--green) 100%);
+      color: #fff;
+      padding: 14px 16px 16px;
+    }
+    .header-top { display: flex; align-items: center; gap: 8px; }
+    .header-icon { font-size: 22px; }
+    .header h1 { font-size: 15px; font-weight: 700; letter-spacing: 0.2px; }
+    .header p  { font-size: 11px; opacity: 0.75; margin-top: 3px; }
+
+    /* ── Sections ────────────────────────────────────────────── */
+    .section {
+      margin: 10px 10px 0;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--muted);
+      background: #fafafa;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-body { padding: 8px 8px 4px; }
+
+    /* ── Buttons ─────────────────────────────────────────────── */
+    .btn-row { margin-bottom: 4px; }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 8px 11px;
+      border: none;
+      border-radius: 5px;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      gap: 8px;
+      transition: filter 0.12s;
+    }
+    .btn:hover:not(:disabled) { filter: brightness(0.93); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .btn-label  { flex: 1; text-align: left; }
+    .btn-icon   { font-size: 15px; line-height: 1; flex-shrink: 0; }
+
+    .btn-primary  { background: var(--green);       color: #fff; }
+    .btn-teal     { background: var(--green-light);  color: var(--green-dark); }
+    .btn-danger   { background: var(--red-light);    color: var(--red); }
+    .btn-amber    { background: var(--amber-light);  color: var(--amber); }
+    .btn-blue     { background: var(--blue-light);   color: var(--blue); }
+    .btn-grey     { background: var(--grey-light);   color: var(--grey); }
+
+    /* Loading spinner */
+    .spinner {
+      display: none;
+      width: 13px; height: 13px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      flex-shrink: 0;
+    }
+    .btn-teal .spinner,
+    .btn-danger .spinner,
+    .btn-amber .spinner,
+    .btn-blue .spinner,
+    .btn-grey .spinner {
+      border-color: rgba(0,0,0,0.12);
+      border-top-color: currentColor;
+    }
+    .btn.loading .spinner { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Description text */
+    .desc {
+      font-size: 11px;
+      color: var(--muted);
+      padding: 2px 11px 5px 34px;
+      line-height: 1.45;
+    }
+
+    /* ── Inline confirm panel ────────────────────────────────── */
+    .confirm-box {
+      display: none;
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      border-radius: 5px;
+      padding: 8px 10px;
+      margin: 3px 0 5px;
+      font-size: 11.5px;
+      color: #4e342e;
+    }
+    .confirm-box.visible { display: block; }
+    .confirm-box p { margin-bottom: 7px; line-height: 1.4; }
+    .confirm-actions { display: flex; gap: 6px; }
+    .confirm-yes {
+      padding: 4px 11px;
+      background: var(--red); color: #fff;
+      border: none; border-radius: 4px;
+      font-size: 11.5px; font-weight: 600; cursor: pointer;
+    }
+    .confirm-no {
+      padding: 4px 11px;
+      background: #e0e0e0; color: #424242;
+      border: none; border-radius: 4px;
+      font-size: 11.5px; cursor: pointer;
+    }
+
+    /* ── Status bar ──────────────────────────────────────────── */
+    #status {
+      margin: 10px 10px 0;
+      padding: 9px 12px;
+      border-radius: var(--radius);
+      font-size: 12px;
+      font-weight: 500;
+      display: none;
+      line-height: 1.4;
+    }
+    #status.success { display: block; background: var(--green-light); color: var(--green-dark); border-left: 3px solid var(--green); }
+    #status.error   { display: block; background: var(--red-light);   color: var(--red);        border-left: 3px solid var(--red); }
+    #status.info    { display: block; background: var(--blue-light);  color: var(--blue);       border-left: 3px solid var(--blue); }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────────────────── -->
+<div class="header">
+  <div class="header-top">
+    <span class="header-icon">☕</span>
+    <div>
+      <h1>Caféen? Admin</h1>
+      <p>Vagtplanlægning &amp; administration</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── Status message ──────────────────────────────────────────── -->
+<div id="status"></div>
+
+<!-- ── Skabelon ────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">📋 Skabelon</div>
+  <div class="section-body">
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-template"
+              onclick="confirmRun('btn-template','confirm-template','sidebarGenerateTemplate')">
+        <span class="btn-icon">🔄</span>
+        <span class="btn-label">Generer skabelon</span>
+        <span class="spinner"></span>
+      </button>
+      <div class="confirm-box" id="confirm-template">
+        <p>⚠️ Dette sletter al eksisterende data i skemaet og kan ikke fortrydes.</p>
+        <div class="confirm-actions">
+          <button class="confirm-yes"
+                  onclick="doRun('btn-template','confirm-template','sidebarGenerateTemplate')">Ja, fortsæt</button>
+          <button class="confirm-no"
+                  onclick="cancelConfirm('btn-template','confirm-template')">Annuller</button>
+        </div>
+      </div>
+      <div class="desc">Opretter en ny tom skabelon fra konfigurationsarket.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Frivillige ──────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">👥 Frivillige</div>
+  <div class="section-body">
+    <div class="btn-row">
+      <button class="btn btn-teal" id="btn-create-pages"
+              onclick="confirmRun('btn-create-pages','confirm-create-pages','sidebarCreatePersonalPages')">
+        <span class="btn-icon">✨</span>
+        <span class="btn-label">Opret personlige sider</span>
+        <span class="spinner"></span>
+      </button>
+      <div class="confirm-box" id="confirm-create-pages">
+        <p>⚠️ Eksisterende personlige sider slettes og genskabes med tomme præferencer.</p>
+        <div class="confirm-actions">
+          <button class="confirm-yes"
+                  onclick="doRun('btn-create-pages','confirm-create-pages','sidebarCreatePersonalPages')">Ja, fortsæt</button>
+          <button class="confirm-no"
+                  onclick="cancelConfirm('btn-create-pages','confirm-create-pages')">Annuller</button>
+        </div>
+      </div>
+      <div class="desc">Opretter en individuel side for hver frivillig baseret på skabelonen.</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-danger" id="btn-delete-pages"
+              onclick="confirmRun('btn-delete-pages','confirm-delete-pages','sidebarDeletePersonalPages')">
+        <span class="btn-icon">🗑️</span>
+        <span class="btn-label">Slet personlige sider</span>
+        <span class="spinner"></span>
+      </button>
+      <div class="confirm-box" id="confirm-delete-pages">
+        <p>⚠️ Dette sletter alle personlige frivilligsider permanent. Alle indtastninger mistes.</p>
+        <div class="confirm-actions">
+          <button class="confirm-yes"
+                  onclick="doRun('btn-delete-pages','confirm-delete-pages','sidebarDeletePersonalPages')">Ja, slet alt</button>
+          <button class="confirm-no"
+                  onclick="cancelConfirm('btn-delete-pages','confirm-delete-pages')">Annuller</button>
+        </div>
+      </div>
+      <div class="desc">Sletter alle personlige sider permanent.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Skema ───────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">📅 Skema</div>
+  <div class="section-body">
+    <div class="btn-row">
+      <button class="btn btn-teal" id="btn-dropdowns"
+              onclick="run('btn-dropdowns','sidebarUpdateDropdowns')">
+        <span class="btn-icon">🔽</span>
+        <span class="btn-label">Opdater dropdowns</span>
+        <span class="spinner"></span>
+      </button>
+      <div class="desc">Opdaterer valgmulighederne ud fra frivilliges præferencer.</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-teal" id="btn-hours"
+              onclick="run('btn-hours','sidebarRefreshHours')">
+        <span class="btn-icon">⏱️</span>
+        <span class="btn-label">Opdater timer</span>
+        <span class="spinner"></span>
+      </button>
+      <div class="desc">Genberegner samlede timer for alle frivillige.</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-amber" id="btn-fill"
+              onclick="run('btn-fill','sidebarFillSchedule')">
+        <span class="btn-icon">🤖</span>
+        <span class="btn-label">Auto-udfyld skema</span>
+        <span class="spinner"></span>
+      </button>
+      <div class="desc">Forsøger automatisk at udfylde vagterne. Kan tage op til 5 min.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Kalender ────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">📆 Kalender</div>
+  <div class="section-body">
+    <div class="btn-row">
+      <button class="btn btn-blue" id="btn-calendar"
+              onclick="run('btn-calendar','sidebarSyncCalendar')">
+        <span class="btn-icon">📤</span>
+        <span class="btn-label">Synkroniser kalender</span>
+        <span class="spinner"></span>
+      </button>
+      <div class="desc">Opretter kalenderbegivenheder og sender invitationer til frivillige.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── E-mails ─────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">📧 E-mails</div>
+  <div class="section-body">
+    <div class="btn-row">
+      <button class="btn btn-teal" id="btn-reminders"
+              onclick="run('btn-reminders','sidebarSendReminders')">
+        <span class="btn-icon">📩</span>
+        <span class="btn-label">Send påmindelser</span>
+        <span class="spinner"></span>
+      </button>
+      <div class="desc">Sender e-mailpåmindelser til frivillige der ikke har udfyldt skemaet.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Eksport ─────────────────────────────────────────────────── -->
+<div class="section">
+  <div class="section-title">📁 Eksport</div>
+  <div class="section-body">
+    <div class="btn-row">
+      <button class="btn btn-grey" id="btn-wiki"
+              onclick="run('btn-wiki','sidebarExportWiki')">
+        <span class="btn-icon">📝</span>
+        <span class="btn-label">Eksportér til Wiki</span>
+        <span class="spinner"></span>
+      </button>
+      <div class="desc">Gemmer skemaet som en Wiki-formateret fil i Google Drive.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var busy = false;
+  var openConfirmId = null;
+
+  // Direct run — no confirmation step
+  function run(btnId, fnName) {
+    if (busy) return;
+    _execute(document.getElementById(btnId), fnName);
+  }
+
+  // Step 1 of destructive run: show inline confirm
+  function confirmRun(btnId, confirmId, fnName) {
+    if (busy) return;
+    if (openConfirmId && openConfirmId !== confirmId) {
+      document.getElementById(openConfirmId).classList.remove('visible');
+    }
+    openConfirmId = confirmId;
+    document.getElementById(btnId).disabled = true;
+    document.getElementById(confirmId).classList.add('visible');
+  }
+
+  // Step 2: user confirmed — run the function
+  function doRun(btnId, confirmId, fnName) {
+    document.getElementById(confirmId).classList.remove('visible');
+    document.getElementById(btnId).disabled = false;
+    openConfirmId = null;
+    _execute(document.getElementById(btnId), fnName);
+  }
+
+  // Cancelled — reset
+  function cancelConfirm(btnId, confirmId) {
+    document.getElementById(confirmId).classList.remove('visible');
+    document.getElementById(btnId).disabled = false;
+    openConfirmId = null;
+  }
+
+  function _execute(btn, fnName) {
+    busy = true;
+    setAllDisabled(true);
+    clearStatus();
+    btn.classList.add('loading');
+
+    google.script.run
+      .withSuccessHandler(function(msg) {
+        btn.classList.remove('loading');
+        busy = false;
+        setAllDisabled(false);
+        showStatus(msg || 'Fuldført ✓', 'success');
+      })
+      .withFailureHandler(function(err) {
+        btn.classList.remove('loading');
+        busy = false;
+        setAllDisabled(false);
+        showStatus('Fejl: ' + (err.message || err), 'error');
+      })
+      [fnName]();
+  }
+
+  function setAllDisabled(state) {
+    document.querySelectorAll('.btn').forEach(function(b) { b.disabled = state; });
+  }
+
+  function showStatus(msg, type) {
+    var el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = type;
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (type === 'success') {
+      setTimeout(function() { if (el.className === 'success') el.className = ''; }, 6000);
+    }
+  }
+
+  function clearStatus() {
+    var el = document.getElementById('status');
+    el.className = '';
+    el.textContent = '';
+  }
+</script>
+
+</body>
+</html>

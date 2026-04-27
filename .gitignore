@@ -1,0 +1,5 @@
+# clasp — contains your personal Script ID; never commit
+.clasp.json
+
+# clasp login credentials
+.clasprc.json
